@@ -103,7 +103,6 @@ export default {
         .query('select')
         .exec();
       if (rows.length == 0) this.persons = [];
-      // else this.persons = rows.filter(x => x.first_name);
       else this.persons = rows;
     },
     loadCsv() {
@@ -129,7 +128,7 @@ export default {
           this.refreshData();
         });
     },
-    deleteAll(person) {
+    deleteAll() {
       nSQL('persondb')
         .query('delete')
         .exec()
