@@ -1,5 +1,6 @@
 <template>
   <v-layout row>
+    <v-snackbar v-model="showOperationStatus" left>{{operationStatus}}</v-snackbar>
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
         <v-toolbar color="cyan" dark>
@@ -9,20 +10,20 @@
 
           <v-spacer></v-spacer>
 
-          <v-btn icon>
-            <v-icon>search</v-icon>
+          <v-btn icon @click="loadCsv">
+            <v-icon>file_upload</v-icon>
           </v-btn>
         </v-toolbar>
 
         <v-list three-line>
           <v-subheader>{{persons.length}} records in person database</v-subheader>
           <template v-for="(person, index) in persons">
-            <v-divider inset="true" :key="index"></v-divider>
+            <v-divider :inset="true" :key="index"></v-divider>
 
             <v-list-tile :key="'person'+index" avatar>
               <v-list-tile-avatar>
                 <img
-                  :src="'https://picsum.photos/200/300/?random&r=' + Math.round(Math.random() * 1000)"
+                  :src="person.avatar"
                 >
               </v-list-tile-avatar>
 
@@ -45,52 +46,46 @@
 </template>
 
 <script>
-const axios = require('axios');
-import { nSQL } from 'nano-sql';
+const axios = require("axios");
+import { nSQL } from "nano-sql";
 
 export default {
-  name: 'PersonList',
+  name: "PersonList",
   data() {
     return {
-      persons: []
+      showOperationStatus: false,
+      operationStatus: "",
+      persons: [],
+      updateObservable: null
     };
   },
-  mounted() {
+  created: function() {
     nSQL().onConnected(() => {
-      axios.get('MOCK_DATA.csv', {}).then(response => {
-        nSQL()
-          .loadCSV('persondb', response.data)
-          .then(() => {
-            nSQL('persondb')
-              .query('select')
-              .exec()
-              .then(rows => {
-                this.persons = rows;
-              });
-          });
-      });
+      this.subscribeDbUpdates();
     });
-
+  },
+  mounted() {
     document.addEventListener(
-      typeof cordova !== 'undefined' ? 'deviceready' : 'DOMContentLoaded',
+      typeof cordova !== "undefined" ? "deviceready" : "DOMContentLoaded",
       () => {
         let model = [
-          { key: 'id', type: 'int', props: ['pk', 'ai'] },
-          { key: 'first_name', type: 'string' },
-          { key: 'last_name', type: 'string' },
-          { key: 'email', type: 'string' },
-          { key: 'gender', type: 'string' },
-          { key: 'ip_address', type: 'string' }
+          { key: "id", type: "int", props: ["pk", "ai"] },
+          { key: "first_name", type: "string" },
+          { key: "last_name", type: "string" },
+          { key: "email", type: "string" },
+          { key: "gender", type: "string" },
+          { key: "ip_address", type: "string" },
+          { key: "avatar", type: "string" }
         ];
-        if (window.nSQLite && window.cordova.platformId != 'browser') {
-          nSQL('persondb')
+        if (window.nSQLite && window.cordova.platformId != "browser") {
+          nSQL("persondb")
             .model(model)
             .config({
               mode: window.nSQLite.getMode() // required
             })
             .connect();
         } else {
-          nSQL('persondb')
+          nSQL("persondb")
             .model(model)
             .connect();
         }
@@ -98,11 +93,42 @@ export default {
     );
   },
   methods: {
-    nSQLonChange: function(data) {
-      this.persons = data;
+    subscribeDbUpdates() {
+      this.updateObservable = nSQL()
+        .observable(() =>
+          nSQL("persondb")
+            .query("select")
+            .emit()
+        )
+        .debounce(100)
+        .filter((rows, idx) => rows.length > 0)
+        .subscribe((rows, event) => {
+          console.log(rows.length)
+          this.persons = rows;
+        });
+    },
+    unsubscribeDbUpdates() {
+      this.updateObservable.unsubscribe();
+    },
+    loadCsv() {
+      axios.get("MOCK_DATA.csv", {}).then(response => {
+        nSQL()
+          .loadCSV("persondb", response.data)
+          .then(rows => {
+            this.showOperationStatus = true;
+            this.operationStatus = `${rows.length} rows added`;
+          });
+      });
     },
     deletePerson(person) {
-      alert(person.id);
+      nSQL("persondb")
+        .query("delete")
+        .where(["id", "=", person.id])
+        .exec()
+        .then(rows => {
+          this.showOperationStatus = true;
+          this.operationStatus = `${rows.length} rows deleted`;
+        });
     }
   }
 };
