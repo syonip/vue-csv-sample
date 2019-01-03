@@ -45,11 +45,11 @@
 </template>
 
 <script>
-const axios = require("axios");
-import { nSQL } from "nano-sql";
+const axios = require('axios');
+import { nSQL } from 'nano-sql';
 
 export default {
-  name: "PersonList",
+  name: 'PersonList',
   data() {
     return {
       persons: []
@@ -57,12 +57,12 @@ export default {
   },
   mounted() {
     nSQL().onConnected(() => {
-      axios.get("MOCK_DATA.csv", {}).then(response => {
+      axios.get('MOCK_DATA.csv', {}).then(response => {
         nSQL()
-          .loadCSV("persondb", response.data)
+          .loadCSV('persondb', response.data)
           .then(() => {
-            nSQL("persondb")
-              .query("select")
+            nSQL('persondb')
+              .query('select')
               .exec()
               .then(rows => {
                 this.persons = rows;
@@ -72,25 +72,25 @@ export default {
     });
 
     document.addEventListener(
-      typeof cordova !== "undefined" ? "deviceready" : "DOMContentLoaded",
+      typeof cordova !== 'undefined' ? 'deviceready' : 'DOMContentLoaded',
       () => {
         let model = [
-          { key: "id", type: "int", props: ["pk", "ai"] },
-          { key: "first_name", type: "string" },
-          { key: "last_name", type: "string" },
-          { key: "email", type: "string" },
-          { key: "gender", type: "string" },
-          { key: "ip_address", type: "string" }
+          { key: 'id', type: 'int', props: ['pk', 'ai'] },
+          { key: 'first_name', type: 'string' },
+          { key: 'last_name', type: 'string' },
+          { key: 'email', type: 'string' },
+          { key: 'gender', type: 'string' },
+          { key: 'ip_address', type: 'string' }
         ];
-        if (window.nSQLite && window.cordova.platformId != "browser") {
-          nSQL("persondb")
+        if (window.nSQLite && window.cordova.platformId != 'browser') {
+          nSQL('persondb')
             .model(model)
             .config({
               mode: window.nSQLite.getMode() // required
             })
             .connect();
         } else {
-          nSQL("persondb")
+          nSQL('persondb')
             .model(model)
             .connect();
         }
