@@ -22,9 +22,7 @@
 
             <v-list-tile :key="'person'+index" avatar>
               <v-list-tile-avatar>
-                <img
-                  :src="person.avatar"
-                >
+                <img :src="person.avatar">
               </v-list-tile-avatar>
 
               <v-list-tile-content>
@@ -48,6 +46,7 @@
 <script>
 const axios = require("axios");
 import { nSQL } from "nano-sql";
+// import { getMode } from "cordova-plugin-nano-sqlite/lib/sqlite-adapter"; //fix path
 
 export default {
   name: "PersonList",
@@ -55,14 +54,8 @@ export default {
     return {
       showOperationStatus: false,
       operationStatus: "",
-      persons: [],
-      updateObservable: null
+      persons: []
     };
-  },
-  created: function() {
-    nSQL().onConnected(() => {
-      this.subscribeDbUpdates();
-    });
   },
   mounted() {
     document.addEventListener(
@@ -77,6 +70,7 @@ export default {
           { key: "ip_address", type: "string" },
           { key: "avatar", type: "string" }
         ];
+
         if (window.nSQLite && window.cordova.platformId != "browser") {
           nSQL("persondb")
             .model(model)
@@ -86,37 +80,36 @@ export default {
             .connect();
         } else {
           nSQL("persondb")
+            .config({
+              mode: "PERM"
+            })
             .model(model)
             .connect();
         }
+
+        nSQL().onConnected(() => {
+          this.refreshData();
+        });
       }
     );
   },
   methods: {
-    subscribeDbUpdates() {
-      this.updateObservable = nSQL()
-        .observable(() =>
-          nSQL("persondb")
-            .query("select")
-            .emit()
-        )
-        .debounce(100)
-        .filter((rows, idx) => rows.length > 0)
-        .subscribe((rows, event) => {
-          console.log(rows.length)
+    refreshData() {
+      nSQL("persondb")
+        .query("select")
+        .exec()
+        .then(rows => {
           this.persons = rows;
         });
-    },
-    unsubscribeDbUpdates() {
-      this.updateObservable.unsubscribe();
     },
     loadCsv() {
       axios.get("MOCK_DATA.csv", {}).then(response => {
         nSQL()
           .loadCSV("persondb", response.data)
-          .then(rows => {
+          .then(() => {
             this.showOperationStatus = true;
-            this.operationStatus = `${rows.length} rows added`;
+            this.operationStatus = `CSV loaded`;
+            this.refreshData();
           });
       });
     },
@@ -128,6 +121,7 @@ export default {
         .then(rows => {
           this.showOperationStatus = true;
           this.operationStatus = `${rows.length} rows deleted`;
+          this.refreshData();
         });
     }
   }

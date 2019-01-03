@@ -23,7 +23,7 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <plugin name="cordova-plugin-nano-sqlite" spec="^1.6.0" />
     <engine name="android" spec="~7.1.4" />
     <engine name="browser" spec="~5.0.4" />
+    <plugin name="cordova-plugin-nano-sqlite" spec="^1.6.0" />
 </widget>
