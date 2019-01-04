@@ -1,29 +1,25 @@
 # vue-csv-sample
 
+## What is this
+You can find the tutorial [here](www.learningsomethingnew.com/vue-js-vue-cli-3-vuetify-cordova-nano-sql-building-a-cross-platform-app-with-a-local-sql-database-that-can-load-data-from-a-static-csv-file)
+
 ## Project setup
 ```
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+### Running in web
 ```
-yarn run serve
-```
-
-### Compiles and minifies for production
-```
-yarn run build
+yarn serve
 ```
 
-### Run your tests
+### Running on Android
 ```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
+npm run cordova-serve-android
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Running on IOS
+```
+npm run cordova-serve-ios
+```
+* You might need to add the cordova ios platform

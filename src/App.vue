@@ -8,7 +8,7 @@
       <v-spacer></v-spacer>
       <v-btn
         flat
-        href="https://www.learningsomethingnew.com"
+        href="https://www.learningsomethingnew.com/vue-js-vue-cli-3-vuetify-cordova-nano-sql-building-a-cross-platform-app-with-a-local-sql-database-that-can-load-data-from-a-static-csv-file"
         target="_blank"
       >
         <span class="mr-2">Tutorial</span>
