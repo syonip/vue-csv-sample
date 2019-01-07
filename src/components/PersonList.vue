@@ -50,7 +50,7 @@
 <script>
 const axios = require('axios');
 import { nSQL } from 'nano-sql';
-// import { getMode } from 'cordova-plugin-nano-sqlite/lib/sqlite-adapter'; //fix path
+import { getMode } from 'cordova-plugin-nano-sqlite/lib/sqlite-adapter';
 
 export default {
   name: 'PersonList',
@@ -75,21 +75,12 @@ export default {
           { key: 'avatar', type: 'string' }
         ];
 
-        if (window.nSQLite && window.cordova.platformId != 'browser') {
-          nSQL('persondb')
-            .model(model)
-            .config({
-              mode: window.nSQLite.getMode() // required
-            })
-            .connect();
-        } else {
-          nSQL('persondb')
-            .config({
-              mode: 'PERM'
-            })
-            .model(model)
-            .connect();
-        }
+        nSQL('persondb')
+          .config({
+            mode: getMode()
+          })
+          .model(model)
+          .connect();
 
         nSQL().onConnected(() => {
           this.refreshData();

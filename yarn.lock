@@ -606,6 +606,10 @@
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.1.tgz#48fd98c1561fe718b61733daed46ff115b496e18"
 
+"@types/websql@0.0.27":
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/@types/websql/-/websql-0.0.27.tgz#621a666a7f02018e7cbb4abab956a25736c27d71"
+
 "@vue/babel-preset-app@^3.2.2":
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/@vue/babel-preset-app/-/babel-preset-app-3.2.2.tgz#05d2643e9ea3986d34bc5c4ccdcb7d96ad61b229"
@@ -1880,6 +1884,13 @@ copy-webpack-plugin@^4.6.0:
 cordova-plugin-device@^2.0.1:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/cordova-plugin-device/-/cordova-plugin-device-2.0.2.tgz#fc08f3722e67eef7b6c67bfc99a83df6add0baba"
+
+cordova-plugin-nano-sqlite@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/cordova-plugin-nano-sqlite/-/cordova-plugin-nano-sqlite-1.7.0.tgz#fddf3e951246f74b73298ed44f8837dbecece1ee"
+  dependencies:
+    "@types/websql" "0.0.27"
+    nano-sql "^1.8.0"
 
 core-js@^2.5.7, core-js@^2.6.1:
   version "2.6.1"
